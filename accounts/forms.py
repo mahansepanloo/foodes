@@ -1,11 +1,7 @@
 from django import forms
-from .models import User
+from .models import User,ProfileUser
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
-
-
-
-
 
 class Usercreateform(forms.ModelForm):
     password1=forms.CharField(widget=forms.PasswordInput)
@@ -86,3 +82,22 @@ class ChangepasswordForm(forms.Form):
         cd = self.cleaned_data
         if cd['password'] and cd['password2'] and cd['password'] != cd['password2']:
             raise ValidationError('passwords dont match')
+
+
+class ProfileForms(forms.ModelForm):
+    class Meta:
+        model = ProfileUser
+        fields = ['firstname','lastname','bio','age']
+    phone_number = forms.CharField()
+
+
+
+
+
+
+
+
+
+
+
+

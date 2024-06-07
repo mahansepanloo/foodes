@@ -11,7 +11,7 @@ urlpatterns = [
     path ('forget/',views.Forget.as_view(),name='forget'),
     path('changepasswor/',views.opcode1.as_view(),name ='opcode1'),
     path('Changepassword/',views.Changepassword.as_view(),name='Changepassword'),
-
+    path('Profile/',views.Prtofile.as_view(),name='Profile')
 
 ]
 

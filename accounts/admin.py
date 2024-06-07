@@ -1,6 +1,6 @@
 from django.contrib import admin
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from .models import User , OptCode
+from django.contrib.auth.admin import UserAdmin as BASEADMIN
+from .models import User , OptCode , ProfileUser
 from .forms import UserChangeForm,Usercreateform
 from django.contrib.auth.models import Group
 
@@ -10,7 +10,11 @@ class OptCodeAdmin(admin.ModelAdmin):
 	readonly_fields = ('timeCreate',)
 
 
-class UserAdmin(BaseUserAdmin):
+class Profline(admin.StackedInline):
+    model = ProfileUser
+
+
+class UserAdmin(BASEADMIN):
 	form = UserChangeForm
 	add_form = Usercreateform
 
@@ -30,5 +34,8 @@ class UserAdmin(BaseUserAdmin):
 	search_fields = ('email', 'username')
 	ordering = ('username',)
 	filter_horizontal = ()
-admin.site.unregister(Group)
+
+	inlines = (Profline,)
+
+
 admin.site.register(User, UserAdmin)

@@ -1,13 +1,24 @@
 from django.shortcuts import render ,redirect
 from django.views import View
-from .forms import Singin_Forms , OptForms, LOginForms , ForgetForm,ChangepasswordForm
-from .models import User ,OptCode
+from .forms import Singin_Forms , OptForms, LOginForms , ForgetForm,ChangepasswordForm,ProfileForms
+
+from .models import User ,OptCode , ProfileUser
 from random import randint
 from django.contrib import messages
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth import login,logout,authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
+
+
+
+
+
+
+
+
+
+
 
 class Sigin(View):
     def dispatch(self, request, *args, **kwargs):
@@ -27,7 +38,7 @@ class Sigin(View):
             info =OptCode.objects.filter(phone_number=cd['phone_number'])
             if info.exists():
                 info.delete()
-            OptCode.objects.create(code=self.randomcod, phone_number=cd['phone_number'])
+            OptCode.objects.create(code=1111, phone_number=cd['phone_number'])
             request.session['signin']={
                 'username':cd['username'],
                 'phone_number':cd['phone_number'],
@@ -155,3 +166,24 @@ class Changepassword(View):
             messages.success(request,'password change','success')
             return redirect('accounts:login')
         return render(request, 'opt.html', {'forms': forms})
+
+class Prtofile(View):
+    def setup(self, request, *args, **kwargs):
+        self.info_user = User.objects.get(id=request.user.id)
+        self.info_profile = ProfileUser.objects.get(username_id=self.info_user.id)
+        return super().setup( request, *args, **kwargs)
+    def get(self,request):
+        forms = ProfileForms(initial={'phone_number':self.info_user.phone_number},instance=self.info_profile)
+        return render(request, 'info.html', {'forms': forms})
+    def post(self,request):
+        forms = ProfileForms(request.POST,initial={
+                             'phone_number': self.info_user.phone_number},
+                             instance=self.info_profile)
+        if forms.is_valid():
+            forms.save()
+            forms.phone_number=forms.cleaned_data['phone_number']
+            forms.save()
+            messages.success(request,'profile is  change','success')
+            return redirect('home:home')
+        return render(request, 'info.html', {'forms': forms})
+
