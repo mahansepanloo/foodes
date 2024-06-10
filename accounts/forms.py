@@ -2,6 +2,7 @@ from django import forms
 from .models import User,ProfileUser
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import ReadOnlyPasswordHashField
+import re
 
 class Usercreateform(forms.ModelForm):
     password1=forms.CharField(widget=forms.PasswordInput)
@@ -12,18 +13,21 @@ class Usercreateform(forms.ModelForm):
     def clean_username(self):
         username = self.cleaned_data['username']
         if User.objects.filter(username=username).exists():
-            raise ValidationError('نام کاربری تکراری است')
+            raise ValidationError('Duplicate username!')
         return username
     def clean_phonenumber(self):
         phonenumber = self.cleaned_data['phone_number']
+        match1 = re.match(r'^09[0-9]{9}$', str(phonenumber))
+        match2 = re.match(r'^\+989[0-9]{9}$', str(phonenumber))
+        match3 = re.match(r'^00989[0-9]{9}$', str(phonenumber))
         if User.objects.filter(phone_number=phonenumber).exists():
-            raise ValidationError('شماره تماس تکراری است')
-        return phonenumber
+            raise ValidationError('Duplicate phone number!')
 
     def clean_password2(self):
         cd = self.cleaned_data
         if cd['password1'] and cd['password2'] and cd['password1'] != cd['password2']:
-            raise ValidationError('passwords dont match')
+            raise ValidationError('passwords dont match!')
+
         return cd['password2']
 
     def ave(self, commit=True):
@@ -48,22 +52,36 @@ class Singin_Forms(forms.ModelForm):
         model = User
         fields = ('username','phone_number')
 
-    def clean(self):
-        p1 = self.cleaned_data['password']
-        p2 = self.cleaned_data['password2']
-        if p1 and p2 and p1 != p2 :
-            raise ValidationError('passwords dont match')
+
     def clean_username(self):
         username = self.cleaned_data['username']
         if User.objects.filter(username=username).exists():
-            raise ValidationError('Duplicate username')
+            raise ValidationError('Duplicate username!')
         return username
-    def clean_phonenumber(self):
-        phonenumber = self.cleaned_data['phone_number']
-        if User.objects.filter(phone_number=phonenumber).exists():
-            raise ValidationError('Duplicate phone number')
-        return phonenumber
+    def clean_phone_number(self):
+            phonenumber = self.cleaned_data['phone_number']
+            match1 = re.match(r'^09[0-9]{9}$', str(phonenumber))
+            if User.objects.filter(phone_number=phonenumber).exists():
+                raise ValidationError('Duplicate phonenumber!')
+            if not match1 :
+                raise ValidationError('phonenumber is wrong!')
+            return phonenumber
 
+    def clean(self):
+        p1 = self.cleaned_data['password']
+        p2 = self.cleaned_data['password2']
+        if len(p1)<5:
+            raise ValidationError('Password must be more than 5 characters')
+        if p1.isnumeric():
+            raise ValidationError('Password must contain letters')
+        if p1.isalpha():
+            raise ValidationError('Password must contain number')
+        if p1.islower():
+            raise ValidationError('Password must contain uppercase letters?')
+        if p1.isupper():
+            raise ValidationError('Password must contain lowercase letters?')
+        if p1 and p2 and p1 != p2 :
+            raise ValidationError('passwords dont match')
 
 class OptForms(forms.Form):
         code = forms.IntegerField()
@@ -81,7 +99,7 @@ class ChangepasswordForm(forms.Form):
     def clean(self):
         cd = self.cleaned_data
         if cd['password'] and cd['password2'] and cd['password'] != cd['password2']:
-            raise ValidationError('passwords dont match')
+            raise ValidationError('passwords dont match!')
 
 
 class ProfileForms(forms.ModelForm):
