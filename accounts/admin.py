@@ -24,7 +24,7 @@ class UserAdmin(BASEADMIN):
 
 	fieldsets = (
 		('Main', {'fields':('username', 'phone_number', 'password')}),
-		('Permissions', {'fields':('is_active', 'is_admin', 'last_login', )}),
+		('Permissions', {'fields':('is_active', 'is_admin', 'last_login','is_superuser','groups','user_permissions')}),
 	)
 
 	add_fieldsets = (
@@ -33,7 +33,14 @@ class UserAdmin(BASEADMIN):
 
 	search_fields = ('email', 'username')
 	ordering = ('username',)
-	filter_horizontal = ()
+	filter_horizontal = ('user_permissions','groups')
+
+	def get_form(self, request, obj=None, change=False, **kwargs):
+		form = super().get_form(request, obj, **kwargs)
+		if not request.user.is_superuser:
+			form.base_fields['is_superuser'].disabled  = True
+		return form
+
 
 	inlines = (Profline,)
 

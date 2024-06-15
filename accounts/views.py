@@ -38,7 +38,7 @@ class Sigin(View):
             info =OptCode.objects.filter(phone_number=cd['phone_number'])
             if info.exists():
                 info.delete()
-            OptCode.objects.create(code=1111, phone_number=cd['phone_number'])
+            OptCode.objects.create(code=self.randomcod, phone_number=cd['phone_number'])
             request.session['signin']={
                 'username':cd['username'],
                 'phone_number':cd['phone_number'],
