@@ -33,7 +33,18 @@ class UserAdmin(BASEADMIN):
 
 	search_fields = ('email', 'username')
 	ordering = ('username',)
+<<<<<<< HEAD
 	filter_horizontal = ('groups','user_permissions')
+=======
+	filter_horizontal = ('user_permissions','groups')
+
+	def get_form(self, request, obj=None, change=False, **kwargs):
+		form = super().get_form(request, obj, **kwargs)
+		if not request.user.is_superuser:
+			form.base_fields['is_superuser'].disabled  = True
+		return form
+
+>>>>>>> master
 
 	inlines = (Profline,)
 	def get_form(self, request, obj=None, change=False, **kwargs):

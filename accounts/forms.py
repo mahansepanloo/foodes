@@ -21,7 +21,14 @@ class Usercreateform(forms.ModelForm):
         match2 = re.match(r'^\+989[0-9]{9}$', str(phonenumber))
         match3 = re.match(r'^00989[0-9]{9}$', str(phonenumber))
         if User.objects.filter(phone_number=phonenumber).exists():
+<<<<<<< HEAD
             raise ValidationError('Duplicate phone number!')
+=======
+            raise ValidationError('شماره تماس تکراری است')
+
+
+        return phonenumber
+>>>>>>> master
 
     def clean_password2(self):
         cd = self.cleaned_data
@@ -51,13 +58,24 @@ class Singin_Forms(forms.ModelForm):
     class Meta:
         model = User
         fields = ('username','phone_number')
+    def clean_phone_number(self):
+        phonenumber = self.cleaned_data['phone_number']
+        if not re.match(r'^09[0-9]{9}$', phonenumber):
+            raise ValidationError('phone number is wrong')
+        if User.objects.filter(phone_number=phonenumber).exists():
+            raise ValidationError('Duplicate phone number')
+        return phonenumber
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> master
     def clean_username(self):
         username = self.cleaned_data['username']
         if User.objects.filter(username=username).exists():
             raise ValidationError('Duplicate username!')
         return username
+<<<<<<< HEAD
     def clean_phone_number(self):
             phonenumber = self.cleaned_data['phone_number']
             match1 = re.match(r'^09[0-9]{9}$', str(phonenumber))
@@ -66,6 +84,26 @@ class Singin_Forms(forms.ModelForm):
             if not match1 :
                 raise ValidationError('phonenumber is wrong!')
             return phonenumber
+=======
+
+    def clean(self):
+        p1 = self.cleaned_data['password']
+        p2 = self.cleaned_data['password2']
+        if not p1.isascii():
+            raise ValidationError('The password must include english letters')
+        elif len(p1) < 4:
+            raise ValidationError('The password must more 4 letters')
+        elif p1.isupper():
+            raise ValidationError('The password must include lowercase letters')
+        elif p1.islower():
+            raise ValidationError('The password must include upper letters')
+        elif p1.isdigit():
+            raise ValidationError('Password must include letters')
+        if p1 and p2 and p1 != p2 :
+            raise ValidationError('passwords dont match')
+
+
+>>>>>>> master
 
     def clean(self):
         p1 = self.cleaned_data['password']
@@ -97,9 +135,27 @@ class ChangepasswordForm(forms.Form):
     password2 = forms.CharField(widget=forms.PasswordInput)
 
     def clean(self):
+<<<<<<< HEAD
         cd = self.cleaned_data
         if cd['password'] and cd['password2'] and cd['password'] != cd['password2']:
             raise ValidationError('passwords dont match!')
+=======
+        p1 = self.cleaned_data['password']
+        p2 = self.cleaned_data['password2']
+        if not p1.isascii():
+            raise ValidationError('The password must include english letters')
+        elif len(p1) < 4:
+            raise ValidationError('The password must more 4 letters')
+        elif p1.isupper():
+            raise ValidationError('The password must include lowercase letters')
+        elif p1.islower():
+            raise ValidationError('The password must include upper letters')
+        elif p1.isdigit():
+            raise ValidationError('Password must include letters')
+        if p1 and p2 and p1 != p2 :
+            raise ValidationError('passwords dont match')
+>>>>>>> master
+
 
 
 class ProfileForms(forms.ModelForm):
