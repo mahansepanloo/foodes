@@ -26,7 +26,7 @@ This repository contains the code for our web application, which is divided into
 
 #### Note: The front-end part of the application has been pre-prepared and customized according to our needs.
 
-### Thank you for visiting our project!
+### Thank you for visiting my project!
 
 
 
