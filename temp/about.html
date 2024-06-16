@@ -50,18 +50,55 @@
         {% include 'nav.html'  %}
 
     <div class="container">
+<button type="button" class="btn btn-outline-warning"><strong>{{ total_rataing }}</strong></button>
+
         <center>
             <img src="{{ food.image.url }}"><br>
 
         <br><h5>{{ food.name }}</h5><br>
 <p >{{ food.about }}</p><br>
             <p><strong>${{ food.price }}</strong></p><br>
+        <h6>COMMENT</h6>
+                        </center>
+
+            {% for com in comment %}
+                <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                <p2>{{ com.created|timesince }}</p2> <h6 class="card-title">{{ com}}: </h6>
+                <p class="card-text">{{ com.comment }}</p>
+
+                    {% for reply in com.rcomments.all %}
+                        <p class="bg-primary p-3 m-2">{{ reply.user }}: <br/>  {{ reply.comment }}</p>
+ {% if request.user.is_admin %}
+                    <form action="{% url 'home:reply' food.slug com.id  %}" method="post" >
+                {% csrf_token %}
+                {{ replyc }}
+                    <input value="ansewr" type="submit">
+                    </form>
+                {% endif %}
+                    {% endfor %}
+
+  </div>
+</div>
+            {% endfor %}
+                                <center>
+
+        <hr>
             <form action="{% url 'order:add' food.id %}" method="post">
                 {% csrf_token %}
                 {{ add }}
                 <input value="add" type="submit">
             </form>
-            </center>
+            <hr>
+            <br>
+        <form method="post" action="">
+            {% csrf_token %}
+            {{ form }}
+            <input value="seva" type="submit">
+        </form>
+                        </center>
+
+
 
 
     </div>

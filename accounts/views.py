@@ -1,4 +1,4 @@
-from django.shortcuts import render ,redirect
+from django.shortcuts import render ,redirect,get_object_or_404
 from django.views import View
 from .forms import Singin_Forms , OptForms, LOginForms , ForgetForm,ChangepasswordForm,ProfileForms
 
@@ -9,6 +9,9 @@ from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth import login,logout,authenticate
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+
 
 
 
@@ -57,7 +60,7 @@ class Opt(View):
             formopt = OptForms(request.POST)
             if formopt.is_valid():
                 cd = formopt.cleaned_data
-                info = OptCode.objects.get(phone_number=request.session['signin']['phone_number'])
+                info = get_object_or_404(OptCode,phone_number=request.session['signin']['phone_number'])
                 extime = info.timeCreate + timedelta(minutes=1)
                 if extime < self.now:
                     messages.error(request,'time opt cod is finesh','success')
@@ -137,7 +140,7 @@ class opcode1(View):
         formopt = OptForms(request.POST)
         if formopt.is_valid():
             cd = formopt.cleaned_data
-            info = OptCode.objects.get(phone_number=request.session['forget']['phone_number'])
+            info =get_object_or_404(OptCode,phone_number=request.session['forget']['phone_number'])
             extime = info.timeCreate + timedelta(minutes=1)
             if extime < self.now:
                 messages.error(request, 'time opt cod is finesh', 'success')
@@ -159,7 +162,7 @@ class Changepassword(View):
     def post(self,request):
         forms = ChangepasswordForm(request.POST)
         if forms.is_valid():
-            u = User.objects.get(phone_number=request.session['forget']['phone_number'])
+            u = get_object_or_404(User,phone_number=request.session['forget']['phone_number'])
             u.set_password(forms.cleaned_data['password'])
             u.save()
             del request.session['forget']
@@ -167,10 +170,10 @@ class Changepassword(View):
             return redirect('accounts:login')
         return render(request, 'opt.html', {'forms': forms})
 
-class Prtofile(View):
+class Prtofile(LoginRequiredMixin,View):
     def setup(self, request, *args, **kwargs):
-        self.info_user = User.objects.get(id=request.user.id)
-        self.info_profile = ProfileUser.objects.get(username_id=self.info_user.id)
+        self.info_user = get_object_or_404(User,id=request.user.id)
+        self.info_profile = get_object_or_404(ProfileUser,username_id=self.info_user.id)
         return super().setup( request, *args, **kwargs)
     def get(self,request):
         forms = ProfileForms(initial={'phone_number':self.info_user.phone_number},instance=self.info_profile)
