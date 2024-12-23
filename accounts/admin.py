@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BASEADMIN
 from .models import User , OptCode , ProfileUser
-from .forms import UserChangeForm,Usercreateform
+from .forms import UserChangeForm,UserCreateForm
 from django.contrib.auth.models import Group
 
 @admin.register(OptCode)
@@ -16,7 +16,7 @@ class Profline(admin.StackedInline):
 
 class UserAdmin(BASEADMIN):
 	form = UserChangeForm
-	add_form = Usercreateform
+	add_form = UserCreateForm
 
 	list_display = ('username', 'phone_number', 'is_admin')
 	list_filter = ('is_admin',)
@@ -33,9 +33,7 @@ class UserAdmin(BASEADMIN):
 
 	search_fields = ('email', 'username')
 	ordering = ('username',)
-<<<<<<< HEAD
-	filter_horizontal = ('groups','user_permissions')
-=======
+
 	filter_horizontal = ('user_permissions','groups')
 
 	def get_form(self, request, obj=None, change=False, **kwargs):
@@ -44,7 +42,6 @@ class UserAdmin(BASEADMIN):
 			form.base_fields['is_superuser'].disabled  = True
 		return form
 
->>>>>>> master
 
 	inlines = (Profline,)
 	def get_form(self, request, obj=None, change=False, **kwargs):
